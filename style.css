@@ -15,8 +15,11 @@ siteDescription{
 nav{
   
 }
-button{
-  
+.button{
+  background-color: blue;
+  color: white;
+  text-align: center;
+  display: inline-block;
 }
 /*-------------------------------------*/
 footer{
