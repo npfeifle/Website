@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .tile-col .tile {
+        background-color: white;
+        border: 1px solid black;
+        color: black;
+        text-align: center;
+        text-decoration: none;
+        font-size: 43px;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        display: block;
+      }
+      .tile-col .tile:hover {
+        background-color: #eeeeee;
+      }
+      .tile-row .tile-col {
+        background-color: white;
+        color: black;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Tic-Tac-Toe</h2>
+    <a href="personalProjects.html" class="button">Back to Personal Projects</a>
+    <div class="board">
+      <div class="tile-row">
+        <div class="tile-col">
+          <button id="0" class="tile" onclick="makeMove(turn, 0)"></button>
+          <button id="1" class="tile" onclick="makeMove(turn, 1)"></button>
+          <button id="2" class="tile" onclick="makeMove(turn, 2)"></button>
+        </div>
+        <div class="tile-col">
+          <button id="3" class="tile" onclick="makeMove(turn, 3)"></button>
+          <button id="4" class="tile" onclick="makeMove(turn, 4)"></button>
+          <button id="5" class="tile" onclick="makeMove(turn, 5)"></button>
+        </div>
+        <div class="tile-col">
+          <button id="6" class="tile" onclick="makeMove(turn, 6)"></button>
+          <button id="7" class="tile" onclick="makeMove(turn, 7)"></button>
+          <button id="8" class="tile" onclick="makeMove(turn, 8)"></button>
+        </div>
+      </div>
+    </div>
+    <button class="button" onclick="clearBoard()">Clear Board</button>
+    <button id="chngOpnt" class="button" onclick="changeOpponent()">Play Against CPU</button>
+    <script>
+      var turn = 0;
+      var board = ["", "", "", "", "", "", "", "", ""];
+      var vscpu = false;
+      function changeOpponent(){
+      	/* This should switch between playing against the CPU or against human */
+        if(vscpu){
+          vscpu = false;
+          clearBoard();
+          document.getElementById("chngOpnt").innerHTML = "Play Against CPU";
+	} else{
+	  vscpu = true;
+          clearBoard();
+          document.getElementById("chngOpnt").innerHTML = "Play Against Human";
+          if(turn == 0){
+            /* Let the CPU make a move first */
+            makeMove(0, evaluateMove(0, board, 0));
+          }
+	}
+      }
+      function evaluateMove(trn, brd, depth){
+        /*
+         * Input:
+         *   trn = who's turn it is: 0 = CPU, 1 = Player
+         *   brd = the current board
+         *   depth = the number of simulated moves taken to get to this board
+         * 
+         * Return:
+         *   This funciton will recursively call itself, returning the score of the board stored in brd.
+         *   This function should return the index of the best possible move AT THE END.
+         */
+        
+        var victory = checkVictory(brd);
+	if((victory == 2) && (depth != 0)){
+          return 0; /* It's a Tie */
+        } else if((victory == 1) && (depth != 0)){
+          return (depth - 10);
+        } else if((victory == 0) && (depth != 0)){
+          return (10 - depth);
+        } else{
+          var cpuBoard = brd;
+          var scores = [null, null, null, null, null, null, null, null, null];
+          var newDepth = depth + 1;
+          for(i = 0; i < 9; i++){
+            if(brd[i] == ""){
+              if(trn == 0){
+                cpuBoard = brd;
+                cpuBoard[i] = "O";
+                scores[i] = evaluateMove(1, cpuBoard, newDepth);
+              } else {
+                cpuBoard = brd;
+                cpuBoard[i] = "X";
+                scores[i] = evaluateMove(0, cpuBoard, newDepth);
+              }
+            }
+          }
+          /* Rather than writing out the same loop 3 times, lets just do it once and get it done with here!*/
+          var maxmove = 0;/* index of the highest score */
+          var maxscore = -10;/* highest score in scores[] */
+          var minscore = 10;/* lowest score in scores[] */
+          for(i = 0; i < 9; i++){
+            if(scores[i] != null){
+              if(scores[i] > maxscore){
+                maxscore = scores[i];
+                maxmove = i;
+              }
+              if(scores[i] < minscore){
+                minscore = scores[i];
+              }
+            }
+          }
+          if(depth == 0){
+            /* Select the best move: return the index of the highest non-null score in scores[] */
+            return maxmove;
+          } else{
+            if(trn == 0){
+              /* CPU's Turn: return the highest non-null score in scores[] */
+              return maxscore;
+            } else if(trn == 1){
+              /* Player's Turn: return the lowest non-null score in scores[] */
+              return minscore;
+            }
+	  }
+        }
+      }
+      function makeMove(move, i){
+        if(board[i] == ""){
+          // turn is just a number to represent the current turn: 0 = O, 1 = X
+          if (move == 0){
+            //Print O to the respective box & change turn back to 1
+            document.getElementById(String(i)).innerHTML = "O";
+            board[String(i)] = "O";
+            turn = 1;
+          } else if (move == 1){
+            // Print X to the respective box & change turn back to 0	
+            document.getElementById(String(i)).innerHTML = "X";
+            board[String(i)] = "X";
+            turn = 0;
+          } else{
+            alert("Error");
+          }
+          switch(new checkVictory(board)){
+		  case -1:
+			  /* Game is not Over*/
+			  break;
+		  case 0:
+			  /* O Wins */
+			  for(i = 0; i < 9; i++){
+		            if (board[i] == ""){
+		              board[i] = " ";
+		            }
+		          }
+			  /* Announce the winner */
+			  if(vscpu){
+			    alert("The CPU Won!");
+			  } else{
+			    alert("O Wins!");
+			  }
+			  break;
+		  case 1:
+			  /* X Wins */
+			  for(i = 0; i < 9; i++){
+		            if (board[i] == ""){
+		              board[i] = " ";
+		            }
+		          }
+			  /* Announce the winner */
+			  if(vscpu){
+			    alert("You Won!");
+			  } else{
+			    alert("X Wins!");
+			  }
+			  break;
+		  case 2:
+			  /* Its A Tie */
+			  alert("Its a Tie");
+			  break;
+          }
+          if(vscpu && (move == 1)){
+            makeMove(turn, evaluateMove(0, board, 0));
+          }
+        }
+      }
+      function clearBoard(){
+        for (i = 0; i < 9; i++){
+          document.getElementById(String(i)).innerHTML = "";
+          board[String(i)] = "";
+        }
+      }
+      function checkVictory(brd){
+        /*
+         * Input:
+         *   brd should be an array representing the current board state to check
+         * Return:
+         *   returns -1 if the game is not over
+         *   returns 0 if O wins
+         *   returns 1 if X wins
+         *   returns 2 if its a Tie
+         */
+        var xwin = (((brd[0]=="X")&&(brd[1]=="X")&&(brd[2]=="X"))||((brd[3]=="X")&&(brd[4]=="X")&&(brd[5]=="X"))||((brd[6]=="X")&&(brd[7]=="X")&&(brd[8]=="X")))||(((brd[0]=="X")&&(brd[3]=="X")&&(brd[6]=="X"))||((brd[1]=="X")&&(brd[4]=="X")&&(brd[7]=="X"))||((brd[2]=="X")&&(brd[5]=="X")&&(brd[8]=="X")))||(((brd[0]=="X")&&(brd[4]=="X")&&(brd[8]=="X"))||((brd[6]=="X")&&(brd[4]=="X")&&(brd[2]=="X")));
+        var owin = (((brd[0]=="O")&&(brd[1]=="O")&&(brd[2]=="O"))||((brd[3]=="O")&&(brd[4]=="O")&&(brd[5]=="O"))||((brd[6]=="O")&&(brd[7]=="O")&&(brd[8]=="O")))||(((brd[0]=="O")&&(brd[3]=="O")&&(brd[6]=="O"))||((brd[1]=="O")&&(brd[4]=="O")&&(brd[7]=="O"))||((brd[2]=="O")&&(brd[5]=="O")&&(brd[8]=="O")))||(((brd[0]=="O")&&(brd[4]=="O")&&(brd[8]=="O"))||((brd[6]=="O")&&(brd[4]=="O")&&(brd[2]=="O")));
+        var end = true;
+        for(i = 0; i < 9; i++){
+          if(brd[i]==""){
+            end = false;
+          }
+        }
+        end = end||owin||xwin;
+        var tie = end && !(owin||xwin);
+        if(tie){
+          return 2;/* It's a Tie */
+        } else if(xwin){
+          return 1;/* X wins */
+        } else if(owin){
+          return 0;/* O wins */
+        } else{
+          return -1;/* Game is not Over */
+        }
+      }
+    </script>
+  </body>
+</html>
