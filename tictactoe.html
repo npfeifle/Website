@@ -64,6 +64,7 @@
       var turn = 0;
       var board = ["", "", "", "", "", "", "", "", ""];
       var vscpu = false;
+      var stack = [];// This will be used to store our extra data. This is necessary for the recursion used in evaluateMove().
       function changeOpponent(){
       	/* This should switch between playing against the CPU or against human */
         if(vscpu){
@@ -76,23 +77,23 @@
           document.getElementById("chngOpnt").innerHTML = "Play Against Human";
           if(turn == 0){
             /* Let the CPU make a move first */
-            makeMove(0, evaluateMove(0, board, 0, -1));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            makeMove(0, evaluateMove(0, 0));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
           }
         }
       }
-      function evaluateMove(trn, brd, depth, move){//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      function evaluateMove(trn, depth){//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         /*
          * Input:
          *   trn = who's turn it is: 0 = CPU, 1 = Player
-         *   brd = the current board
+         *   brd = the current board ***REMOVED***
          *   depth = the number of simulated moves taken to get to this board
-         *   move = the position of the move that was made, will be -1 if it is the first one called
+         *   move = the position of the move that was made, will be -1 if it is the first one called ***REMOVED***
          * 
          * Return:
          *   This funciton will recursively call itself, returning the score of the board stored in brd.
          *   This function should return the index of the best possible move AT THE END.
          */
-        var victory = checkVictory(brd);
+        var victory = checkVictory();
         if((victory == 2) && (depth != 0)){
           return 0; /* It's a Tie */
         } else if((victory == 1) && (depth != 0)){
@@ -100,19 +101,28 @@
         } else if((victory == 0) && (depth != 0)){
           return (10 - depth);
         } else if(victory == -1){
-          var cpuBoard = brd;
           var scores = [null, null, null, null, null, null, null, null, null];
-          var newDepth = depth + 1;
+          var eval;// This will hold what is returned by evaluateMove()
           for(i = 0; i < 9; i++){
-            if(brd[i] == ""){
+            if(board[i] == ""){
               if(trn == 0){
-                cpuBoard = brd;
-                cpuBoard[i] = "O";
-                scores[i] = evaluateMove(1, cpuBoard, newDepth, i);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                board[i] = "O";
+                stack.push(scores);
+                stack.push(i);
+                eval = evaluateMove(1, depth+1);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                i = stack.pop();
+                scores = stack.pop();
+                scores[i] = eval;
+                board[i] = "";
               } else {
-                cpuBoard = brd;
-                cpuBoard[i] = "X";
-                scores[i] = evaluateMove(0, cpuBoard, newDepth, i);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                board[i] = "X";
+                stack.push(scores);
+                stack.push(i);
+                eval = evaluateMove(0, depth+1);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                i = stack.pop();
+                scores = stack.pop();
+                scores[i] = eval;
+                board[i] = "";
               }
             }
           }
@@ -142,7 +152,7 @@
               /* Player's Turn: return the lowest non-null score in scores[] */
               return minscore;
             }
-	  }
+          }
         }
       }
       function makeMove(move, i){
@@ -161,7 +171,7 @@
           } else{
             alert("Error");
           }
-          var victory = checkVictory(board)
+          var victory = checkVictory()
           switch(victory){
 		  case -1:
 			  /* Game is not Over*/
@@ -200,7 +210,7 @@
 			  break;
           }
           if(vscpu && (move == 1)){
-            makeMove(turn, evaluateMove(0, board, 0, -1));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            makeMove(turn, evaluateMove(0, 0));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
           }
         }
       }
@@ -209,22 +219,25 @@
           document.getElementById(String(i)).innerHTML = "";
           board[i] = "";
         }
+        if(vscpu && (turn == 0)){
+          makeMove(0, evaluateMove(0,0));
+        }
       }
-      function checkVictory(brd){
+      function checkVictory(){
         /*
          * Input:
-         *   brd should be an array representing the current board state to check
+         *   brd should be an array representing the current board state to check ***REMOVED***
          * Return:
          *   returns -1 if the game is not over
          *   returns 0 if O wins
          *   returns 1 if X wins
          *   returns 2 if its a Tie
          */
-        var xwin = (((brd[0]=="X")&&(brd[1]=="X")&&(brd[2]=="X"))||((brd[3]=="X")&&(brd[4]=="X")&&(brd[5]=="X"))||((brd[6]=="X")&&(brd[7]=="X")&&(brd[8]=="X")))||(((brd[0]=="X")&&(brd[3]=="X")&&(brd[6]=="X"))||((brd[1]=="X")&&(brd[4]=="X")&&(brd[7]=="X"))||((brd[2]=="X")&&(brd[5]=="X")&&(brd[8]=="X")))||(((brd[0]=="X")&&(brd[4]=="X")&&(brd[8]=="X"))||((brd[6]=="X")&&(brd[4]=="X")&&(brd[2]=="X")));
-        var owin = (((brd[0]=="O")&&(brd[1]=="O")&&(brd[2]=="O"))||((brd[3]=="O")&&(brd[4]=="O")&&(brd[5]=="O"))||((brd[6]=="O")&&(brd[7]=="O")&&(brd[8]=="O")))||(((brd[0]=="O")&&(brd[3]=="O")&&(brd[6]=="O"))||((brd[1]=="O")&&(brd[4]=="O")&&(brd[7]=="O"))||((brd[2]=="O")&&(brd[5]=="O")&&(brd[8]=="O")))||(((brd[0]=="O")&&(brd[4]=="O")&&(brd[8]=="O"))||((brd[6]=="O")&&(brd[4]=="O")&&(brd[2]=="O")));
+        var xwin = (((board[0]=="X")&&(board[1]=="X")&&(board[2]=="X"))||((board[3]=="X")&&(board[4]=="X")&&(board[5]=="X"))||((board[6]=="X")&&(board[7]=="X")&&(board[8]=="X")))||(((board[0]=="X")&&(board[3]=="X")&&(board[6]=="X"))||((board[1]=="X")&&(board[4]=="X")&&(board[7]=="X"))||((board[2]=="X")&&(board[5]=="X")&&(board[8]=="X")))||(((board[0]=="X")&&(board[4]=="X")&&(board[8]=="X"))||((board[6]=="X")&&(board[4]=="X")&&(board[2]=="X")));
+        var owin = (((board[0]=="O")&&(board[1]=="O")&&(board[2]=="O"))||((board[3]=="O")&&(board[4]=="O")&&(board[5]=="O"))||((board[6]=="O")&&(board[7]=="O")&&(board[8]=="O")))||(((board[0]=="O")&&(board[3]=="O")&&(board[6]=="O"))||((board[1]=="O")&&(board[4]=="O")&&(board[7]=="O"))||((board[2]=="O")&&(board[5]=="O")&&(board[8]=="O")))||(((board[0]=="O")&&(board[4]=="O")&&(board[8]=="O"))||((board[6]=="O")&&(board[4]=="O")&&(board[2]=="O")));
         var end = true;
         for(i = 0; i < 9; i++){
-          if(brd[i]==""){
+          if(board[i]==""){
             end = false;
           }
         }
