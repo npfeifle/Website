@@ -48,46 +48,30 @@
         <button id="8" class="tile" onclick="makeMove(turn, 8)"></button>
       </div>
     </div>
-    <button class="button" onclick="clearBoard()">Clear Board</button>
+    <button class="button" onclick="newGame()">New Game</button>
     <button id="chngOpnt" class="button" onclick="changeOpponent()">Play Against CPU</button>
-    <p id="debug1">Debug1</p>
-    <p id="debug2">Debug2</p>
-    <p id="debug3">Debug3</p>
-    <p id="debug4">Debug4</p>
-    <p id="debug5">Debug5</p>
-    <p id="debug6">Debug6</p>
-    <p id="debug7">Debug7</p>
-    <p id="debug8">Debug8</p>
-    <p id="debug9">Debug9</p>
-    <p id="debug10">Debug10</p>
     <script>
-      var turn = 0;
-      var board = ["", "", "", "", "", "", "", "", ""];
-      var vscpu = false;
+      var turn = 0;// This indicates whose turn it is: 0 = O, 1 = X
+      var board = ["", "", "", "", "", "", "", "", ""];// This is a "behind the scenes" version of the board, used for logic purposes.
+      var vscpu = false;// vscpu will be false when the user plays against a human opponent, and true when the user plays against the AI.
       var stack = [];// This will be used to store our extra data. This is necessary for the recursion used in evaluateMove().
       function changeOpponent(){
       	/* This should switch between playing against the CPU or against human */
         if(vscpu){
           vscpu = false;
-          clearBoard();
+          newGame();
           document.getElementById("chngOpnt").innerHTML = "Play Against CPU";
         } else{
           vscpu = true;
-          clearBoard();
+          newGame();
           document.getElementById("chngOpnt").innerHTML = "Play Against Human";
-          if(turn == 0){
-            /* Let the CPU make a move first */
-            makeMove(0, evaluateMove(0, 0));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-          }
         }
       }
-      function evaluateMove(trn, depth){//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      function evaluateMove(trn, depth){
         /*
          * Input:
          *   trn = who's turn it is: 0 = CPU, 1 = Player
-         *   brd = the current board ***REMOVED***
          *   depth = the number of simulated moves taken to get to this board
-         *   move = the position of the move that was made, will be -1 if it is the first one called ***REMOVED***
          * 
          * Return:
          *   This funciton will recursively call itself, returning the score of the board stored in brd.
@@ -109,7 +93,7 @@
                 board[i] = "O";
                 stack.push(scores);
                 stack.push(i);
-                eval = evaluateMove(1, depth+1);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                eval = evaluateMove(1, depth+1);
                 i = stack.pop();
                 scores = stack.pop();
                 scores[i] = eval;
@@ -118,7 +102,7 @@
                 board[i] = "X";
                 stack.push(scores);
                 stack.push(i);
-                eval = evaluateMove(0, depth+1);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                eval = evaluateMove(0, depth+1);
                 i = stack.pop();
                 scores = stack.pop();
                 scores[i] = eval;
@@ -157,7 +141,7 @@
       }
       function makeMove(move, i){
         if(board[i] == ""){
-          // turn is just a number to represent the current turn: 0 = O, 1 = X
+          // move is just a number to represent the current turn: 0 = O, 1 = X
           if (move == 0){
             //Print O to the respective box & change turn back to 1
             document.getElementById(String(i)).innerHTML = "O";
@@ -210,11 +194,11 @@
 			  break;
           }
           if(vscpu && (move == 1)){
-            makeMove(turn, evaluateMove(0, 0));//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            makeMove(turn, evaluateMove(0, 0));
           }
         }
       }
-      function clearBoard(){
+      function newGame(){
         for (i = 0; i < 9; i++){
           document.getElementById(String(i)).innerHTML = "";
           board[i] = "";
@@ -226,13 +210,15 @@
       function checkVictory(){
         /*
          * Input:
-         *   brd should be an array representing the current board state to check ***REMOVED***
+         *   None
          * Return:
          *   returns -1 if the game is not over
          *   returns 0 if O wins
          *   returns 1 if X wins
          *   returns 2 if its a Tie
          */
+        // Yes, these look long and ugly, but they are singular boolean statements that check if X/O won the game
+        // vertically, horizontally, or diagonally. 
         var xwin = (((board[0]=="X")&&(board[1]=="X")&&(board[2]=="X"))||((board[3]=="X")&&(board[4]=="X")&&(board[5]=="X"))||((board[6]=="X")&&(board[7]=="X")&&(board[8]=="X")))||(((board[0]=="X")&&(board[3]=="X")&&(board[6]=="X"))||((board[1]=="X")&&(board[4]=="X")&&(board[7]=="X"))||((board[2]=="X")&&(board[5]=="X")&&(board[8]=="X")))||(((board[0]=="X")&&(board[4]=="X")&&(board[8]=="X"))||((board[6]=="X")&&(board[4]=="X")&&(board[2]=="X")));
         var owin = (((board[0]=="O")&&(board[1]=="O")&&(board[2]=="O"))||((board[3]=="O")&&(board[4]=="O")&&(board[5]=="O"))||((board[6]=="O")&&(board[7]=="O")&&(board[8]=="O")))||(((board[0]=="O")&&(board[3]=="O")&&(board[6]=="O"))||((board[1]=="O")&&(board[4]=="O")&&(board[7]=="O"))||((board[2]=="O")&&(board[5]=="O")&&(board[8]=="O")))||(((board[0]=="O")&&(board[4]=="O")&&(board[8]=="O"))||((board[6]=="O")&&(board[4]=="O")&&(board[2]=="O")));
         var end = true;
@@ -243,9 +229,6 @@
         }
         end = end||owin||xwin;
         var tie = end && !(owin||xwin);
-        /*VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV*/
-        document.getElementById("debug1").innerHTML = "Debug1: " + String(board);
-        /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
         if(tie){
           return 2;/* It's a Tie */
         } else if(xwin){
