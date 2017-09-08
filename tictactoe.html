@@ -48,8 +48,28 @@
         <button id="8" class="tile" onclick="makeMove(turn, 8)"></button>
       </div>
     </div>
-    <button class="button" onclick="newGame()">New Game</button>
-    <button id="chngOpnt" class="button" onclick="changeOpponent()">Play Against CPU</button>
+    <div>
+      <button class="button" onclick="newGame()">New Game</button>
+      <button id="chngOpnt" class="button" onclick="changeOpponent()">Play Against CPU</button>
+      <button id="detailsButton" class="button" onclick="showDetails()">Show Details</button>
+    </div>
+    <script>
+      var showInfo = false;
+      function showDetails(){
+        if(showInfo){
+          document.getElementById("detailsButton").innerHTML = "Show Details";
+          document.getElementById("details").innerHTML = "";
+          showInfo = false;
+        } else{
+          document.getElementById("detailsButton").innerHTML = "Hide Details";
+          document.getElementById("details").innerHTML = "I decided to challenge myself, by only using JavaScript on this project. I used a MinMax algorithm for the computer player, making it virtually unbeatable. While designing the AI, I noticed that variables made within functions are still considered global, which caused minor problems designing recursive functions. I solved this issue, by adding an array to serve as a stack that would properly maintain all of the necessary data. This solution worked flawlessly.";
+          showInfo = true;
+        }
+      }
+    </script>
+    <div>
+      <p id="details"></p>
+    </div>
     <script>
       var turn = 0;// This indicates whose turn it is: 0 = O, 1 = X
       var board = ["", "", "", "", "", "", "", "", ""];// This is a "behind the scenes" version of the board, used for logic purposes.
