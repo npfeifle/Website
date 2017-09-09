@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <title>Fallout Terminal Hacking Aid</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <h2>Fallout Terminal Hacking Aid</h2>
+    <a href="personalProjects.html" class="button">Back to Personal Projects</a>
+    <input type="text" name="inputBox" size="40" />
+    <div>
+      <p>Added Words:</p>
+      <p id="wordList"></p>
+    </div>
+    <div>
+      <button class="button" onclick="startOver()">Start Over</button>
+      <button class="button" onclick="pushWord()">Add</button>
+      <button class="button" onclick="popWord()">Undo</button>
+      <button class="button" onclick="hack()">Hack</button>
+      <button id="detailsButton" class="button" onclick="showDetails()">Show Details</button>
+    </div>
+    <script>
+      var showInfo = false;
+      function showDetails(){
+        if(showInfo){
+          document.getElementById("detailsButton").innerHTML = "Show Details";
+          document.getElementById("details").innerHTML = "";
+          showInfo = false;
+        } else{
+          document.getElementById("detailsButton").innerHTML = "Hide Details";
+          document.getElementById("details").innerHTML = "I decided to challenge myself, by only using JavaScript on this project. I used a MinMax algorithm for the computer player, making it virtually unbeatable. While designing the AI, I noticed that variables made within functions are still considered global, which caused minor problems designing recursive functions. I solved this issue, by adding an array to serve as a stack that would properly maintain all of the necessary data. This solution worked flawlessly.";
+          showInfo = true;
+        }
+      }
+    </script>
+    <div>
+      <p id="details"></p>
+    </div>
+    <script>
+      var addedWords = [];/* This is an array that will hold all of the words used in the hacking process. */
+      function startOver(){
+        /*
+         * Input:
+         *   None
+         * Description:
+         *   Removes all words from addedWords[], shortList[], and updates the display to show the empty arrays.
+         * Return:
+         *   None
+         */
+      }
+      function pushWord(){
+        /*
+         * Input:
+         *   None
+         * Description:
+         *   Adds the word from the textbox (id="wordList") to addedWords[], then clears the textbox
+         * Return:
+         *   None
+         */
+      }
+      function popWord(){
+        /*
+         * Input:
+         *   None
+         * Description:
+         *   Removes the most recent word from addedWords[]. 
+         * Return:
+         *   None
+         */
+      }
+      function hack(){
+        /*
+         * Input:
+         *   None
+         * Description:
+         *   Displays the best words and allows the user to select a word and likeness to shorten the list.
+         * Return:
+         *   None
+         */
+      }
+    </script>
+  </body>
+</html>
