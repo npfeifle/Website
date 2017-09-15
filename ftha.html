@@ -42,10 +42,14 @@
          * Input:
          *   None
          * Description:
-         *   Removes all words from addedWords[], shortList[], and updates the display to show the empty arrays.
+         *   Removes all words from addedWords[] and updates the display to show the empty arrays.
          * Return:
          *   None
          */
+        while(addedWords.length > 0){
+          addedWords.pop();
+        }
+        document.getElementById("wordList").innerHTML = addedWords;
       }
       function pushWord(){
         /*
@@ -76,6 +80,28 @@
          * Return:
          *   None
          */
+      }
+      function getLikeness(str1, str2){
+        /*
+         * Input:
+         *   str1, str2:  Strings representing words. Both words should be the same length.
+         * Description:
+         *   Counts the number of times str1 and str2 have the same character at the same index.
+         * Return:
+         *   -1:  str1 and str2 are not the same length
+         *   >=0: The likeness between str1 and str2
+         */
+        var alike = 0;
+        if(str1.length != str2.length){
+          return -1;
+        } else{
+          for(i = 0; i < str1.length; i++){
+            if(str1[i] == str2[i]){
+              alike ++;
+            }
+          }
+          return alike;
+        }
       }
     </script>
   </body>
