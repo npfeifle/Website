@@ -18,6 +18,33 @@
       <button class="button" onclick="hack()">Hack</button>
       <button id="detailsButton" class="button" onclick="showDetails()">Show Details</button>
     </div>
+    <div>
+      <!-- This div contains what is shown after the hack. -->
+      <div>
+        <!-- This is the box that shows the list of words after the hack. -->
+        <div>
+          <p id="hackWordPrev"></p>
+          <p id="hackWord"></p>
+          <p id="hackWordNext"></p>
+        </div>
+        <div>
+          <button class="ScrollButton" onclick="scroll(0, 0)">^</button>
+          <button class="ScrollButton" onclick="scroll(1, 0)">V</button>
+        </div>
+      </div>
+      <div>
+        <!-- This is the box that allows the user to select the likeness -->
+        <div>
+          <p id="hackLikenessPrev"></p>
+          <p id="hackLikeness"></p>
+          <p id="hackLikenessNext"></p>
+        </div>
+        <div>
+          <button class="ScrollButton" onclick="scroll(0, 1)">^</button>
+          <button class="ScrollButton" onclick="scroll(1, 1)">V</button>
+        </div>
+      </div>
+    </div>
     <script>
       var showInfo = false;
       function showDetails(){
@@ -37,6 +64,9 @@
     </div>
     <script>
       var addedWords = [];/* This is an array that will hold all of the words used in the hacking process. */
+      var hackedWords = [];/* This is an array that will show the order of the hacked words, from best to worst. */
+      var hackIndex = 0;/* This is the index of the current word selected from hackedWords. */
+      var likenessIndex = 0;/* This is the current index of the likeness selector. */
       function startOver(){
         /*
          * Input:
@@ -101,6 +131,74 @@
             }
           }
           return alike;
+        }
+      }
+      function scroll(dir, box){
+        /*
+         * Input:
+         *   dir:  int that represents the direction to be scrolled. (0=Up; 1=Down)
+         *   box:  represents the box that is calling this scroll command. (0=Hacked Words; 1=Likeness)
+         * Description:
+         *   Scrolls up or down on either the list of hacked words, or the Likeness. Updates hackIndex & likenessIndex.
+         * Return:
+         *   None
+         */
+        if(box == 0){
+          if(dir == 0){
+            // Scrolling the Hacked Words list up!
+            if(hackIndex == 1){
+              document.getElementById("hackWordPrev").innerHTML = "";
+              document.getElementById("hackWord").innerHTML = hackedWords[(hackIndex - 1)];
+              document.getElementById("hackWordNext").innerHTML = hackedWords[hackIndex];
+              hackIndex --;
+            } else if(hackIndex > 1){
+              document.getElementById("hackWordPrev").innerHTML = hackedWords[(hackIndex - 2)];
+              document.getElementById("hackWord").innerHTML = hackedWords[(hackIndex - 1)];
+              document.getElementById("hackWordNext").innerHTML = hackedWords[hackIndex];
+              hackIndex --;
+            }
+          } else if(dir == 1){
+            // Scrolling the Hacked Words list down!
+            if(hackIndex == (hackedWords.length - 2)){
+              document.getElementById("hackWordPrev").innerHTML = hackedWords[hackIndex];
+              document.getElementById("hackWord").innerHTML = hackWords[(hackIndex + 1)];
+              document.getElementById("hackWordNext").innerHTML = "";
+              hackIndex ++;
+            } else if(hackIndex < (hackedWords.length - 2)){
+              document.getElementById("hackWordPrev").innerHTML = hackedWords[hackIndex];
+              document.getElementById("hackWord").innerHTML = hackedWords[(hackIndex + 1)];
+              document.getElementById("hackWordNext").innerHTML = hackedWords[(hackIndex + 2)];
+              hackIndex ++;
+            }
+          }
+        } else if(box == 1){
+          if(dir == 0){
+            // Scrolling the Likeness up!
+            if(likenessIndex == 1){
+              document.getElementById("hackLikenessPrev").innerHTML = "";
+              document.getElementById("hackLikeness").innerHTML = "0";
+              document.getElementById("hackLikenessNext").innerHTML = "1";
+              likenessIndex --;
+            } else if(likenessIndex > 1){
+              document.getElementById("hackLikenessPrev").innerHTML = String(likenessIndex - 2);
+              document.getElementById("hackLikeness").innerHTML = String(likenessIndex - 1);
+              document.getElementById("hackLikenessNext").innerHTML = String(likenessIndex);
+              likenessIndex --;
+            }
+          } else if(dir == 1){
+            // Scrolling the Likeness down!
+            if(likenessIndex == (hackedWords[0].length - 2)){
+              document.getElementById("hackLikenessPrev").innerHTML = String(likenessIndex);
+              document.getElementById("hackLikeness").innerHTML = String(likenessIndex + 1);
+              document.getElementById("hackLikenessNext").innerHTML = "";
+              likenessIndex ++;
+            } else if(likenessIndex < (hackedWords[0].length - 2)){
+              document.getElementById("hackLikenessPrev").innerHTML = String(likenessIndex);
+              document.getElementById("hackLikeness").innerHTML = String(likenessIndex + 1);
+              document.getElementById("hackLikenessNext").innerHTML = String(likenessIndex + 2);
+              likenessIndex ++;
+            }
+          }
         }
       }
     </script>
